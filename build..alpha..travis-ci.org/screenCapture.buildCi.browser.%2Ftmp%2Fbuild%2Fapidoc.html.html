@@ -1,0 +1,154 @@
+<html><head></head><body><div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a href="https://github.com/fergiemcdowall/norch#readme">norch (v0.8.12)</a>
+</h1>
+<h4>A search engine based on Node.js and LevelDB</h4>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.norch">module norch</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.norch.norch">
+            function <span class="apidocSignatureSpan"></span>norch
+            <span class="apidocSignatureSpan">(options, callback)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.norch" id="apidoc.module.norch">module norch</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.norch.norch" id="apidoc.element.norch.norch">
+        function <span class="apidocSignatureSpan"></span>norch
+        <span class="apidocSignatureSpan">(options, callback)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">norch = function (options, callback) {
+  options = options || {}
+  const Logger = require('bunyan')
+  const _ = require('lodash')
+  const fs = require('fs')
+  const searchindex = require('search-index')
+  // If a search-index is being passed to Norch- use
+  var norchHome = options.norchHome || 'norch-index'
+  fs.mkdir(norchHome, function (err) {
+    options = _.defaults(
+      options, {
+        cors: null,
+        norchHome: norchHome,
+        log: new Logger.createLogger({ // eslint-disable-line
+          name: 'norch',
+          level: options.logLevel || 'info',
+          serializers: {
+            req: function (req) {
+              return {
+                method: req.method,
+                url: req.url,
+                headers: req.headers
+              }
+            }
+          },
+          streams: [
+            {
+              path: norchHome + '/info.log',
+              level: 'info'
+            },
+            {
+              path: norchHome + '/error.log',
+              level: 'error'
+            }
+          ]
+        }),
+        port: 3030,
+        machineReadable: true,
+        si: null
+      })
+    if (err) options.log.info(err)
+    if (process.argv.indexOf('-h') === -1) {
+      if (options.si) {
+        return startServer(options, callback)
+      } else {
+        searchindex({
+          indexPath: norchHome + '/data',
+          log: options.log
+        }, function (err, si) {
+          if (err) {
+            console.log(err)
+          } else {
+            options.si = si
+            // maybe delete norchHome?
+            return startServer(options, callback)
+          }
+        })
+      }
+    }
+  })
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
+</body></html>
